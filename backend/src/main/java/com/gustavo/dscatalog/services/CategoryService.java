@@ -7,12 +7,15 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gustavo.dscatalog.dto.CategoryDTO;
 import com.gustavo.dscatalog.entities.Category;
 import com.gustavo.dscatalog.repositories.CategoryRepository;
+import com.gustavo.dscatalog.services.exceptions.DatabaseException;
 import com.gustavo.dscatalog.services.exceptions.ResourceNotFoundException;
 
 @Service // with this annotation, spring boot will manage the instances of this
@@ -56,7 +59,7 @@ public class CategoryService {
 			/*
 			 * we are using this instead of findById, because findById go to the database.
 			 * To avoid go to the database twice (one for find and other for save), we use
-			 * getOne method to load an temporary object in memory with the id that the is
+			 * getOne method to load a temporary object in memory with the id that the is
 			 * being passed. The performance of our code is much better than go to the
 			 * database find a record.
 			 */
@@ -66,7 +69,18 @@ public class CategoryService {
 
 			return new CategoryDTO(category);
 		} catch (EntityNotFoundException e) {
-			throw new ResourceNotFoundException("Id not found");
+			throw new ResourceNotFoundException("Id not found: " + id);
+		}
+	}
+
+	
+	public void delete(Long id) {
+		try {
+			categoryRepository.deleteById(id);
+		}catch(EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException("Id not found: " + id);
+		}catch(DataIntegrityViolationException e) {
+			throw new DatabaseException("Integrity violation");
 		}
 	}
 
