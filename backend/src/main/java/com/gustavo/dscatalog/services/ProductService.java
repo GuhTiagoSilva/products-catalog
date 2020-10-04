@@ -12,8 +12,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gustavo.dscatalog.dto.CategoryDTO;
 import com.gustavo.dscatalog.dto.ProductDTO;
+import com.gustavo.dscatalog.entities.Category;
 import com.gustavo.dscatalog.entities.Product;
+import com.gustavo.dscatalog.repositories.CategoryRepository;
 import com.gustavo.dscatalog.repositories.ProductRepository;
 import com.gustavo.dscatalog.services.exceptions.DatabaseException;
 import com.gustavo.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -23,6 +26,9 @@ public class ProductService {
 
 	@Autowired
 	private ProductRepository productRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 	
 	@Transactional(readOnly = true) // avoiding the locking in the database
 	public Page<ProductDTO> findAllPaged(PageRequest pageRequest) {
@@ -39,27 +45,19 @@ public class ProductService {
 	}
 
 	@Transactional
-	public ProductDTO insert(ProductDTO categoryDTO) {
+	public ProductDTO insert(ProductDTO dto) {
 		Product product = new Product();
-		//product.setName(categoryDTO.getName());
+		copyDtoToEntity(dto, product);
 		product = productRepository.save(product);
 		return new ProductDTO(product);
 	}
 
 	@Transactional
-	public ProductDTO update(Long id, ProductDTO productDTO) {
+	public ProductDTO update(Long id, ProductDTO dto) {
 		try {
 			Product product = productRepository.getOne(id);
-
-			/*
-			 * we are using this instead of findById, because findById go to the database.
-			 * To avoid go to the database twice (one for find and other for save), we use
-			 * getOne method to load a temporary object in memory with the id that the is
-			 * being passed. The performance of our code is much better than go to the
-			 * database find a record.
-			 */
-
-			product.setName(productDTO.getName());
+			copyDtoToEntity(dto, product);
+			product.setName(dto.getName());
 			product = productRepository.save(product);
 
 			return new ProductDTO(product);
@@ -68,7 +66,6 @@ public class ProductService {
 		}
 	}
 
-	
 	public void delete(Long id) {
 		try {
 			productRepository.deleteById(id);
@@ -77,6 +74,23 @@ public class ProductService {
 		}catch(DataIntegrityViolationException e) {
 			throw new DatabaseException("Integrity violation");
 		}
+	}
+	
+	private void copyDtoToEntity(ProductDTO dto, Product product) {
+		
+		product.setName(dto.getName());
+		product.setPrice(dto.getPrice());
+		product.setImgUrl(dto.getImgUrl());
+		product.setDescription(dto.getDescription());
+		product.setDate(dto.getDate());
+		
+		product.getCategories().clear();
+		
+		for (CategoryDTO categoryDTO : dto.getCategories()) {
+			Category category = categoryRepository.getOne(categoryDTO.getId());
+			product.getCategories().add(category);
+		}
+		
 	}
 	
 }
