@@ -1,8 +1,10 @@
+// all this variables are from bootstrap. We are configuring them as we want.
+
 $theme-colors: (
     "primary": #407BFF
-);
+); // configuring bootstrap primary property with our configurations.
 
-$body-bg:#E5E5E5;
-$body-color: #263238;
+$body-bg:#E5E5E5; // configuring body of the page. Bootstrap provides some colors by default, but here we are configuring in the way that we want.
+$body-color: #263238; 
 
-@import '~bootstrap/scss/bootstrap.scss';
+@import '~bootstrap/scss/bootstrap.scss'; 
