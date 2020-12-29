@@ -4,7 +4,7 @@ $theme-colors: (
     "primary": #407BFF
 ); // configuring bootstrap primary property with our configurations.
 
-$body-bg:#E5E5E5; // configuring body of the page. Bootstrap provides some colors by default, but here we are configuring in the way that we want.
+$body-bg:#F2F2F2; // configuring body of the page. Bootstrap provides some colors by default, but here we are configuring in the way that we want.
 $body-color: #263238; 
 
 @import '~bootstrap/scss/bootstrap.scss'; 

@@ -5,6 +5,7 @@ import { makeRequest } from 'core/utils/request';
 import ProductCard from './components/ProductCard';
 import ProductCardLoader from './components/Loaders/ProductCardLoader';
 import './styles.scss'
+import Pagination from 'core/components/Pagination';
 
 const Catalog = () => {
 
@@ -13,6 +14,7 @@ const Catalog = () => {
 
     const [productsResponse, setProductsResponse] = useState<ProductsResponse>();
     const [isLoading, setIsLoading] = useState(false);
+    const [activePage, setActivePage] = useState(0);
 
 
     console.log(productsResponse);
@@ -20,8 +22,8 @@ const Catalog = () => {
     useEffect(() => {
 
         const params = {
-            page: 0,
-            linesPerPage: 20
+            page: activePage,
+            linesPerPage: 5
         }
 
         //show loader before the request
@@ -36,7 +38,7 @@ const Catalog = () => {
             });
 
 
-    }, []); // when we pass the second parameter as an empty list, we are saying that we will do something when the component starts
+    }, [activePage]); // when we pass the second parameter as an empty list, we are saying that we will do something when the component starts
 
     return (
         <div className="catalog-container">
@@ -45,11 +47,27 @@ const Catalog = () => {
 
                 {isLoading ? <ProductCardLoader /> : (
                     productsResponse?.content.map(product => (
-                        <Link to={`/products/${product.id}`} key={product.id}><ProductCard product={product} /></Link>
+                        <Link
+                            to={`/products/${product.id}`}
+                            key={product.id}>
+                            <ProductCard product={product} />
+                        </Link>
                     )))}
                 { }
 
             </div>
+            {
+                productsResponse?.totalPages &&
+
+                (
+                    <Pagination
+                        totalPages={productsResponse?.totalPages}
+                        activePage={activePage}
+                        onChange={page => setActivePage(page)}
+                    />
+                )
+            }
+
         </div>
     );
 }
