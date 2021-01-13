@@ -57,7 +57,7 @@ public class ProductResource {
 				.fromCurrentRequest()
 				.path("/{id}")
 				.buildAndExpand(productDTO.getId())
-				.toUri(); // inserting an object in the header. Whith the code 201, we need to pass in the location header, the resource created
+				.toUri(); // inserting an object in the header. With the code 201, we need to pass in the location header, the resource created
 
 		return ResponseEntity.created(uri).body(productDTO);
 	}
