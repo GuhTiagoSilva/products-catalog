@@ -2,36 +2,47 @@ package com.gustavo.dscatalog.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.gustavo.dscatalog.dto.UserInsertDTO;
+import com.gustavo.dscatalog.dto.UserUpdateDTO;
 import com.gustavo.dscatalog.entities.User;
 import com.gustavo.dscatalog.repositories.UserRepository;
 import com.gustavo.dscatalog.resources.exceptions.FieldMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.servlet.HandlerMapping;
 
-public class UserInsertValidator implements ConstraintValidator<UserInsertValid, UserInsertDTO> {
-
+public class UserUpdateValidator implements ConstraintValidator<UserUpdateValid, UserUpdateDTO>{
+    
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private HttpServletRequest request;
+
     @Override
-    public void initialize(UserInsertValid constraintAnnotation) {
+    public void initialize(UserUpdateValid constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
-    public boolean isValid(UserInsertDTO dto, ConstraintValidatorContext context) {
+    public boolean isValid(UserUpdateDTO dto, ConstraintValidatorContext context) {
+
+        @SuppressWarnings("unchecked")
+        var uriVars = (Map<String,String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);// getting the attributes of URL. The HandlerMapping access the variables in URL
+        long userId = Long.parseLong(uriVars.get("id"));
 
         List<FieldMessage> list = new ArrayList<>();
 
         User user = repository.findByEmail(dto.getEmail());
 
-        if (user != null)
+        if (user != null && userId != user.getId()){
             list.add(new FieldMessage("email", "email já existe"));
+        }
 
         for (FieldMessage e : list) {
             context.disableDefaultConstraintViolation();
