@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.gustavo.dscatalog.entities.Role;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 import com.gustavo.dscatalog.entities.User;
 
 public class UserDTO implements Serializable{
@@ -13,10 +15,12 @@ public class UserDTO implements Serializable{
 
 	private Long id;
 
+	@NotBlank(message = "Campo Obrigatório")
 	private String firstName;
 
 	private String lastName;
 
+	@Email(message = "Favor entrar um email válido")
 	private String email;
 
 	private Set<RoleDTO> roles = new HashSet<>();
