@@ -3,7 +3,6 @@ package com.gustavo.dscatalog.resources.exceptions;
 import java.time.Instant;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Validation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
