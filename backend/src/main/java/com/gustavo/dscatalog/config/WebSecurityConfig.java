@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	@Bean
-	protected AuthenticationManager authenticationManager() throws Exception { // with bean annotation, we can turn this method available in our system as a configuration.
+	protected AuthenticationManager authenticationManager() throws Exception { // with bean annotation, we can turn this method available in our system as a configuration.We will need this to do the authentication in the authorization server
 		return super.authenticationManager();
 	}
 	
