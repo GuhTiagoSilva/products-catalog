@@ -39,14 +39,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/actuator/**");
+		web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**",
+				"/swagger-ui.html", "/webjars/**");
+
 	}
 
-	
 	@Override
 	@Bean
-	protected AuthenticationManager authenticationManager() throws Exception { // with bean annotation, we can turn this method available in our system as a configuration.We will need this to do the authentication in the authorization server
+	protected AuthenticationManager authenticationManager() throws Exception { // with bean annotation, we can turn this
+																				// method available in our system as a
+																				// configuration.We will need this to do
+																				// the authentication in the
+																				// authorization server
 		return super.authenticationManager();
 	}
-	
-	
+
 }
