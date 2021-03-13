@@ -1,5 +1,7 @@
 package com.gustavo.dscatalog.services;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
@@ -26,14 +28,15 @@ public class ProductService {
 
 	@Autowired
 	private ProductRepository productRepository;
-	
+
 	@Autowired
 	private CategoryRepository categoryRepository;
-	
+
 	@Transactional(readOnly = true) // avoiding the locking in the database
-	public Page<ProductDTO> findAllPaged(PageRequest pageRequest) {
-		Page<Product> list = productRepository.findAll(pageRequest);
-		return list.map(x-> new ProductDTO(x));
+	public Page<ProductDTO> findAllPaged(PageRequest pageRequest, String name, Long categoryId) {
+		List<Category> categories = (categoryId == 0 ? null : Arrays.asList(categoryRepository.getOne(categoryId)));
+		Page<Product> list = productRepository.find(categories, name, pageRequest);
+		return list.map(x -> new ProductDTO(x));
 	}
 
 	@Transactional(readOnly = true)
@@ -69,28 +72,28 @@ public class ProductService {
 	public void delete(Long id) {
 		try {
 			productRepository.deleteById(id);
-		}catch(EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id not found: " + id);
-		}catch(DataIntegrityViolationException e) {
+		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Integrity violation");
 		}
 	}
-	
+
 	private void copyDtoToEntity(ProductDTO dto, Product product) {
-		
+
 		product.setName(dto.getName());
 		product.setPrice(dto.getPrice());
 		product.setImgUrl(dto.getImgUrl());
 		product.setDescription(dto.getDescription());
 		product.setDate(dto.getDate());
-		
+
 		product.getCategories().clear();
-		
+
 		for (CategoryDTO categoryDTO : dto.getCategories()) {
 			Category category = categoryRepository.getOne(categoryDTO.getId());
 			product.getCategories().add(category);
 		}
-		
+
 	}
-	
+
 }
