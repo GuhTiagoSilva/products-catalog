@@ -69,7 +69,6 @@ public class UserService implements UserDetailsService {
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Entity Not Found");
 		}
-
 	}
 
 	@Transactional(readOnly = true)
@@ -101,7 +100,6 @@ public class UserService implements UserDetailsService {
 			Role role = roleRepository.getOne(roleDTO.getId());
 			user.getRoles().add(role);
 		}
-
 	}
 
 	@Override
